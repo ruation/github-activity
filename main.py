@@ -6,22 +6,20 @@ import urllib.error
 def main():
     if len(sys.argv)>1:
         username = ' '.join(sys.argv[1:])
-        url = (f'http://api.github.com/users/{username}/events')
-        fetch_github_activity(url)
+        url = (f'https://api.github.com/users/{username}/events/public')
+        print(fetch_github_activity(url))
     else:
         print('you need to write a user')
 
 def fetch_github_activity(url):
     headers = {
-            'User-Agent': 'Python-User-Activity-Tool'
+            "User-Agent": "Python-GitHub-Activity-CLI"
     }
-
     request = urllib.request.Request(url, headers=headers)
 
     try:
         with urllib.request.urlopen(request) as response:
             data =  response.read().decode('utf-8')
-            print(json.loads(data))
             return json.loads(data)
 
     except urllib.error.HTTPError as e:
@@ -37,6 +35,5 @@ def fetch_github_activity(url):
         return None
 
 
-
-
-main()
+if __name__ == '__main__':
+    main()
