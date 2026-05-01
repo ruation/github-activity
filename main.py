@@ -5,9 +5,12 @@ import urllib.error
 
 def main():
     if len(sys.argv)>1:
-        username = ' '.join(sys.argv[1:])
+        username = sys.argv[1]
         url = (f'https://api.github.com/users/{username}/events/public')
-        print(fetch_github_activity(url))
+        events = fetch_github_activity(url)
+        print(f'========== Recent activity for the user: {username} =========\n\n')
+        for event in events:
+            print_event(event)
     else:
         print('you need to write a user')
 
@@ -34,6 +37,17 @@ def fetch_github_activity(url):
         print('Error: could not connect to GitHub.')
         return None
 
+def print_event(event):
+    event_type = event.get("type")
+    username = sys.argv[1]
+
+    if event_type == "PushEvent":
+        repo = event.get("repo").get("name")
+        print(f'push in the repo: "{repo}"')
+    
+    if event_type == "CreateEvent":
+        repo = event.get("repo").get("name")
+        print(f'create the repo: "{repo}"')
 
 if __name__ == '__main__':
     main()
