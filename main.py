@@ -8,6 +8,8 @@ def main():
         username = sys.argv[1]
         url = (f'https://api.github.com/users/{username}/events/public')
         events = fetch_github_activity(url)
+        if not events:
+            sys.exit(1)
         print(f'========== Recent activity for the user: {username} =========\n\n')
         for event in events:
             print_event(event)
@@ -40,14 +42,18 @@ def fetch_github_activity(url):
 def print_event(event):
     event_type = event.get("type")
     username = sys.argv[1]
+    repo = event.get("repo", {}).get("name", "Unknown repo")
 
     if event_type == "PushEvent":
-        repo = event.get("repo").get("name")
-        print(f'push in the repo: "{repo}"')
-    
-    if event_type == "CreateEvent":
-        repo = event.get("repo").get("name")
-        print(f'create the repo: "{repo}"')
+        print(f'Pushed commit(s) to {repo}')
 
+    elif event_type == "CreateEvent":
+        print(f'create the repo: "{repo}"')
+    elif event_type == "WatchEvent":
+        print(f'starred the repo: {repo}')
+    elif event_type == "ForkEvent":
+        print(f'Forked {repo}')
+    else:
+        print(f'{event_type} in {repo}')
 if __name__ == '__main__':
     main()
